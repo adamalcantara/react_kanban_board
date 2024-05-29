@@ -2,6 +2,7 @@ import PlusIcon from "../icons/PlusIcon";
 import { useState } from "react";
 // import the types column defined in its file
 import { Column } from "../types";
+import ColumnContainer from "./ColumnContainer";
 
 function KanbanBoard() {
     // define columns and set columns and have them set to an empty array, using the type defined in the file
@@ -19,7 +20,11 @@ function KanbanBoard() {
     overflow-y-hidden
     px-[40px]
     ">
-        <div className="m-auto">
+        <div className="m-auto flex gap-4">
+            <div className="flex gap-4">{columns.map(col => (
+                <ColumnContainer column={col}/>
+            ))}
+            </div>
             <button 
             onClick={() => {
                 createNewColumn();
@@ -34,7 +39,7 @@ function KanbanBoard() {
             border-2
             border-columnBackgroundColor
             p-4
-            ring-rose-500
+            ring-sky-500
             hover:ring-2
             flex
             gap-2
