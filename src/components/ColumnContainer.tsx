@@ -2,23 +2,32 @@ import { Column, ID } from "../types";
 import TrashIcon from "../icons/TrashIcon";
 import { useSortable } from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities"; 
+import { useState } from "react";
 
 // Define the column prop
 interface Props {
     column: Column;
     deleteColumn: (id: ID) => void;
+
+    // function to update the column name
+    updateColumn: (id: ID, title: string) => void;
 }
 
 function ColumnContainer(props: Props) {
     // Set column equal to props
-    const { column, deleteColumn } = props;
+    const { column, deleteColumn, updateColumn } = props;
+
+    // state for editing title
+    const [editMode, setEditMode] = useState(false);
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
         id:column.id,
         data:{
             type: "Column",
             column,
-        }
+        },
+        // disable the drag and drop when in edit mode
+        disabled: editMode,
     });
 
     const style = {
@@ -65,6 +74,10 @@ function ColumnContainer(props: Props) {
         <div 
         {...attributes}
         {...listeners}
+        // When clicked, activate the edit mode
+        onClick={() => {
+            setEditMode(true);
+        }}
         className="
         bg-mainBackgroundColor
         text-md
@@ -92,7 +105,31 @@ function ColumnContainer(props: Props) {
                 text-sm
                 rounded-full
                 ">0</div>
-                {column.title}
+                {!editMode && column.title}
+                {editMode && (
+                <input 
+                className="
+                bg-black
+                focus:border-sky-500
+                border
+                rounded
+                outline-none
+                px-2
+                "
+                value={column.title}
+                onChange={e => updateColumn(column.id, e.target.value)}
+                autoFocus 
+                // When focus is anywhere else, set it back to column title
+                onBlur={() => {
+                    setEditMode(false);
+                }}
+                // Set the edit mode to false if Enter key is hit
+                onKeyDown={e => {
+                    if (e.key !== "Enter")return;
+                    setEditMode(false);
+                }}
+                />)
+                }
             </div>
             <button 
             // On the click of the button, delete the column whose id is pressed
