@@ -13,10 +13,20 @@ function KanbanBoard() {
     const [columns, setColumns] = useState<Column[]>([]);
     // array of columns ID which maps over columns, recalculate the array every time the columns array changes
     const columnsID = useMemo(() => columns.map((col) => col.id), [columns]);
-    console.log(columns);
+    console.log("Here are the columns", columns);
 
     // State for tasks
     const [tasks, setTasks] = useState<Task[]>([]);
+    console.log("Here are the tasks", tasks);
+
+    // LOCAL STORAGE ADDITION
+    
+    // TASKS
+    let taskList = tasks;
+    console.log("tempList: ", taskList);
+    localStorage.setItem("tasks", JSON.stringify(taskList));
+
+
 
     // State for column that is being dragged, has state of column or null just in case there is nothing
     const [activeColumn, setActiveColumn] = useState<Column | null>(null);
@@ -124,6 +134,13 @@ function KanbanBoard() {
         columnID,
         content: `Task ${tasks.length + 1}`,
     };
+    console.log("New Task", newTask);
+
+    // const addTask = newTask;
+    // console.log("Add Task", addTask);
+
+    // let tempList = tasks;
+    // console.log("TempList: ", tempList);
 
     setTasks([...tasks,newTask]);
   }
