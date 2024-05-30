@@ -3,8 +3,8 @@ import { useMemo, useState } from "react";
 // import the types column defined in its file
 import { Column, ID } from "../types";
 import ColumnContainer from "./ColumnContainer";
-import { DndContext, DragOverlay, DragStartEvent } from "@dnd-kit/core";
-import { SortableContext } from "@dnd-kit/sortable";
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 
 function KanbanBoard() {
@@ -16,6 +16,16 @@ function KanbanBoard() {
 
     // State for column that is being dragged, has state of column or null just in case there is nothing
     const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+
+
+    // Define clicks that are drag clicks and clicks that are regular clicks
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 3, //A distance of 3 px will constitute a drag
+            }
+        })
+    );
 
   return (
     // Outer div
@@ -30,7 +40,7 @@ function KanbanBoard() {
     px-[40px]
     ">
         {/* Container for the columns, wrapped in DndContext for drag and drop capability */}
-        <DndContext onDragStart={onDragStart}>
+        <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
             <div className="m-auto flex gap-4">
                 <div className="flex gap-4">
                 <SortableContext items={columnsID}>
@@ -94,6 +104,7 @@ function KanbanBoard() {
     const filteredColumns = columns.filter(col => col.id !== id);
     setColumns(filteredColumns);
   }
+//   Function for when a column is being dragged
   function onDragStart(event: DragStartEvent) {
       console.log("DRAG START", event);
       if (event.active.data.current?.type === "Column") {
@@ -101,6 +112,26 @@ function KanbanBoard() {
           return;
       }
   }
+//   Function for when dragging stops
+function onDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over) return;
+
+    // Define variables for the column being dragged, and the column it is over
+    const activeColumnID = active.id;
+    const overColumnID = over.id;
+
+    // If the IDs are identical, stop and do nothing
+    if(activeColumnID === overColumnID)return;
+    
+    setColumns((columns) => {
+        const activeColumnIndex = columns.findIndex(col => col.id === activeColumnID);
+        const overColumnIndex = columns.findIndex(col => col.id === overColumnID);
+
+        // arrayMove from dnd, swap the active column index with over column index
+        return arrayMove(columns, activeColumnIndex, overColumnIndex);
+    })
+}
 }
 // END OF KANBAN BOARD FUNCTION
 
