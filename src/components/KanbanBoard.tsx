@@ -221,20 +221,34 @@ function onDragOver(event: DragOverEvent) {
 
     const isActiveATask = active.data.current?.type === "Task";
     const isOverATask = over.data.current?.type === "Task";
+
+    if(!isActiveATask) return;
     // Dropping a task over another task
-if (isActiveATask && isOverATask) {
-    setTasks((tasks) => {
-        const activeIndex = tasks.findIndex((t) => t.id === activeID);
-        const overIndex = tasks.findIndex((t) => t.id === overID);
+    if (isActiveATask && isOverATask) {
+        setTasks((tasks) => {
+            const activeIndex = tasks.findIndex((t) => t.id === activeID);
+            const overIndex = tasks.findIndex((t) => t.id === overID);
 
-            tasks[activeIndex].columnID = tasks[overIndex].columnID;
 
-        return arrayMove(tasks, activeIndex, overIndex);
-    })
-}
+
+                tasks[activeIndex].columnID = tasks[overIndex].columnID;
+
+            return arrayMove(tasks, activeIndex, overIndex);
+        });
+    }
+
+    const isOverAColumn = over.data.current?.type === "Column";
 
     // dropping a task over a column
-    
+    if (isActiveATask && isOverAColumn) {
+        setTasks((tasks) => {
+            const activeIndex = tasks.findIndex((t) => t.id === activeID);
+           
+            tasks[activeIndex].columnID = overID;
+
+            return arrayMove(tasks, activeIndex, activeIndex);
+        });
+    }
 }
 }
 // END OF KANBAN BOARD FUNCTION
