@@ -3,8 +3,9 @@ import { useMemo, useState } from "react";
 // import the types column defined in its file
 import { Column, ID } from "../types";
 import ColumnContainer from "./ColumnContainer";
-import { DndContext, DragStartEvent } from "@dnd-kit/core";
+import { DndContext, DragOverlay, DragStartEvent } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
 
 function KanbanBoard() {
     // define columns and set columns and have them set to an empty array, using the type defined in the file
@@ -61,6 +62,17 @@ function KanbanBoard() {
                     <PlusIcon />
                     Add Column</button>
             </div>
+
+        {/* Drag overlay, which is where the column is while being dragged*/}
+        {createPortal(
+        <DragOverlay>
+            {activeColumn && (
+            <ColumnContainer column={activeColumn} deleteColumn={deleteColumn} />
+            )}
+        </DragOverlay>,
+        // put the element inside the document body
+        document.body
+    )}
         </DndContext>
     </div>
   );
@@ -90,9 +102,9 @@ function KanbanBoard() {
       }
   }
 }
+// END OF KANBAN BOARD FUNCTION
 
-
-// function to generate a random ID
+// function to generate a random ID. This is OUTSIDE the KanbanBoard function
 function generateID() {
     return Math.floor(Math.random() * 10001);
 }
