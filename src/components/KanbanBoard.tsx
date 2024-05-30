@@ -54,6 +54,8 @@ function KanbanBoard() {
                     deleteColumn={deleteColumn}
                     updateColumn={updateColumn}
                     createTask={createTask}
+                    deleteTask={deleteTask}
+                    updateTask={updateTask}
                     tasks={tasks.filter((task) => task.columnID === col.id)}
                     />
                 ))}
@@ -92,6 +94,9 @@ function KanbanBoard() {
                 deleteColumn={deleteColumn} 
                 updateColumn={updateColumn} 
                 createTask={createTask}
+                deleteTask={deleteTask}
+                updateTask={deleteTask}
+                tasks={tasks.filter((task) => task.columnID === activeColumn.id)}
             />
             )}
         </DragOverlay>,
@@ -111,6 +116,23 @@ function KanbanBoard() {
 
     setTasks([...tasks,newTask]);
   }
+
+
+  function deleteTask(id:ID) {
+    const newTasks = tasks.filter(task => task.id !==id);
+    setTasks(newTasks);
+}
+
+function updateTask(id:ID, content: string) {
+    const newTasks = tasks.map(task => {
+        if (task.id !==id) return task;
+        return{...task, content};
+    });
+
+    setTasks(newTasks);
+}
+
+
   function createNewColumn() {
     // define column to add and have it use the type of column
     const columnToAdd: Column = {

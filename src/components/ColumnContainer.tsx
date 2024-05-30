@@ -4,6 +4,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities"; 
 import { useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
+import TaskCard from "./TaskCard";
 
 // Define the column prop
 interface Props {
@@ -15,13 +16,14 @@ interface Props {
 
     // create task
     createTask: (columnID: ID) => void;
-
+    deleteTask:(id:ID) => void;
+    updateTask:(id: ID, content: string) => void;
     tasks: Task[];
 }
 
 function ColumnContainer(props: Props) {
     // Set column equal to props
-    const { column, deleteColumn, updateColumn, createTask, tasks } = props;
+    const { column, deleteColumn, updateColumn, createTask, tasks, deleteTask, updateTask } = props;
 
     // state for editing title
     const [editMode, setEditMode] = useState(false);
@@ -155,9 +157,9 @@ function ColumnContainer(props: Props) {
         </div>
 
         {/* Column task container */}
-        <div className="flex flex-grow">{            
+        <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">{            
             tasks.map((task) => (
-                <div key={task.id}>{task.content}</div>
+                <TaskCard key={task.id} task={task} deleteTask={deleteTask} updateTask={updateTask}/>
             ))}
         </div>
         {/* Column footer */}
