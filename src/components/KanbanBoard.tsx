@@ -160,6 +160,9 @@ function updateTask(id: ID, content: string) {
   function deleteColumn(id: ID) {
     const filteredColumns = columns.filter(col => col.id !== id);
     setColumns(filteredColumns);
+
+    const newTasks = tasks.filter((t) => t.columnID !== id);
+    setTasks(newTasks);
   }
 
   function updateColumn(id: ID, title: string) {
