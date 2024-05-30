@@ -1,8 +1,8 @@
 import { Column, ID, Task } from "../types";
 import TrashIcon from "../icons/TrashIcon";
-import { useSortable } from "@dnd-kit/sortable";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities"; 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
 import TaskCard from "./TaskCard";
 
@@ -28,6 +28,10 @@ function ColumnContainer(props: Props) {
     // state for editing title
     const [editMode, setEditMode] = useState(false);
 
+    const tasksIDs = useMemo(() => {
+        return tasks.map(task => task.id);
+    }, [tasks]);
+
     const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
         id:column.id,
         data:{
@@ -45,7 +49,8 @@ function ColumnContainer(props: Props) {
 
     // If a column is being dragged, use this styling for the column's background state
     if (isDragging) {
-        return <div ref={setNodeRef} style={style} 
+        return (
+        <div ref={setNodeRef} style={style} 
         className="
         bg-columnBackgroundColor
         opacity-60
@@ -58,7 +63,7 @@ function ColumnContainer(props: Props) {
         flex
         flex-col
         "
-        ></div>
+        ></div>);
     }
 
   return (
@@ -157,10 +162,13 @@ function ColumnContainer(props: Props) {
         </div>
 
         {/* Column task container */}
-        <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">{            
+        <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
+        <SortableContext items={tasksIDs}>
+            {            
             tasks.map((task) => (
                 <TaskCard key={task.id} task={task} deleteTask={deleteTask} updateTask={updateTask}/>
             ))}
+        </SortableContext>
         </div>
         {/* Column footer */}
         <button className="

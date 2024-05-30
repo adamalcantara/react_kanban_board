@@ -1,6 +1,8 @@
 import { useState } from "react";
 import TrashIcon from "../icons/TrashIcon";
 import { ID, Task } from "../types"
+import { useSortable } from "@dnd-kit/sortable";
+import {CSS} from "@dnd-kit/utilities"
 
 interface Props {
     task: Task;
@@ -12,13 +14,48 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
     const [mouseIsOver, setMouseIsOver] = useState(false);
     const [editMode, setEditMode] = useState(false);
 
+    // useSortable hook to change and order tasks
+    const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
+        id:task.id,
+        data:{
+            type: "Task",
+            task,
+        },
+        // disable the drag and drop when in edit mode
+        disabled: editMode,
+    });
+
+    const style = {
+        transition,
+        transform: CSS.Transform.toString(transform),
+    }
+
+
     const toggleEditMode = () => {
         setEditMode((prev) => !prev);
         setMouseIsOver(false);
     }
 
+    if (isDragging) {
+        return <div ref={setNodeRef} style={style} className="
+        bg-mainBackgroundColor
+        p-2.5
+        h-[100px]
+        min-h-[100px]
+        items-center
+        flex
+        text-left
+        rounded-xl
+        border-2
+        border-sky-500
+        cursor-grab
+        relative
+        opacity-50
+        "/>
+    }
+
     if (editMode) {
-        return   <div
+        return   <div ref={setNodeRef} style={style} {...attributes} {...listeners}
         className="
         bg-mainBackgroundColor
         p-2.5
@@ -58,7 +95,7 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
 
   return (
     <div
-    onClick={toggleEditMode} 
+    onClick={toggleEditMode} ref={setNodeRef} style={style} {...attributes} {...listeners}
     // If the mouse is over the task, show the delete button
     onMouseEnter={() => {
         setMouseIsOver(true);
