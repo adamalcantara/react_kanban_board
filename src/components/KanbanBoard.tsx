@@ -20,7 +20,9 @@ function KanbanBoard() {
     console.log("Here are the tasks", tasks);
 
     // LOCAL STORAGE ADDITION
-    
+    // COLUMNS
+    let columnList = columns;
+    localStorage.setItem("columns", JSON.stringify(columnList));
     // TASKS
     let taskList = tasks;
     console.log("tempList: ", taskList);
