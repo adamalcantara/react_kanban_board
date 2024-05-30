@@ -6,3 +6,10 @@ export type Column = {
     id: ID;
     title: string;
 }
+
+// Tasks
+export type Task = {
+    id: ID,
+    columnID: ID;
+    content: string;
+}

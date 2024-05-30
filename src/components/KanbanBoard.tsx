@@ -1,7 +1,7 @@
 import PlusIcon from "../icons/PlusIcon";
 import { useMemo, useState } from "react";
 // import the types column defined in its file
-import { Column, ID } from "../types";
+import { Column, ID, Task } from "../types";
 import ColumnContainer from "./ColumnContainer";
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
@@ -13,6 +13,9 @@ function KanbanBoard() {
     // array of columns ID which maps over columns, recalculate the array every time the columns array changes
     const columnsID = useMemo(() => columns.map((col) => col.id), [columns]);
     console.log(columns);
+
+    // State for tasks
+    const [tasks, setTasks] = useState<Task[]>([]);
 
     // State for column that is being dragged, has state of column or null just in case there is nothing
     const [activeColumn, setActiveColumn] = useState<Column | null>(null);
@@ -50,6 +53,8 @@ function KanbanBoard() {
                     column={col} 
                     deleteColumn={deleteColumn}
                     updateColumn={updateColumn}
+                    createTask={createTask}
+                    tasks={tasks.filter((task) => task.columnID === col.id)}
                     />
                 ))}
                 
@@ -82,7 +87,12 @@ function KanbanBoard() {
         {createPortal(
         <DragOverlay>
             {activeColumn && (
-            <ColumnContainer column={activeColumn} deleteColumn={deleteColumn} updateColumn={updateColumn} />
+            <ColumnContainer 
+                column={activeColumn} 
+                deleteColumn={deleteColumn} 
+                updateColumn={updateColumn} 
+                createTask={createTask}
+            />
             )}
         </DragOverlay>,
         // put the element inside the document body
@@ -92,6 +102,15 @@ function KanbanBoard() {
     </div>
   );
 
+  function createTask(columnID: ID) {
+    const newTask: Task = {
+        id: generateID(),
+        columnID,
+        content: `Task ${tasks.length + 1}`,
+    };
+
+    setTasks([...tasks,newTask]);
+  }
   function createNewColumn() {
     // define column to add and have it use the type of column
     const columnToAdd: Column = {

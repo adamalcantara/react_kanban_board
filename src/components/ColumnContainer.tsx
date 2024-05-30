@@ -1,8 +1,9 @@
-import { Column, ID } from "../types";
+import { Column, ID, Task } from "../types";
 import TrashIcon from "../icons/TrashIcon";
 import { useSortable } from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities"; 
 import { useState } from "react";
+import PlusIcon from "../icons/PlusIcon";
 
 // Define the column prop
 interface Props {
@@ -11,11 +12,16 @@ interface Props {
 
     // function to update the column name
     updateColumn: (id: ID, title: string) => void;
+
+    // create task
+    createTask: (columnID: ID) => void;
+
+    tasks: Task[];
 }
 
 function ColumnContainer(props: Props) {
     // Set column equal to props
-    const { column, deleteColumn, updateColumn } = props;
+    const { column, deleteColumn, updateColumn, createTask, tasks } = props;
 
     // state for editing title
     const [editMode, setEditMode] = useState(false);
@@ -149,9 +155,29 @@ function ColumnContainer(props: Props) {
         </div>
 
         {/* Column task container */}
-        <div className="flex flex-grow">Content</div>
+        <div className="flex flex-grow">{            
+            tasks.map((task) => (
+                <div key={task.id}>{task.content}</div>
+            ))}
+        </div>
         {/* Column footer */}
-        <div>Footer</div>
+        <button className="
+        flex
+        gap-2
+        items-center
+        border-columnBackgroundColor
+        border-2
+        rounded-md
+        p-4
+        border-x-columnBackgroundColor
+        hover:bg-mainBackgroundColor
+        hover:text-sky-500
+        active:bg-black
+        "
+        onClick={() => {
+            createTask(column.id);
+        }}
+        ><PlusIcon />Add Task</button>
         </div>
   )
 }
